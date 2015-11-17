@@ -10,7 +10,6 @@ class ControlApp(object):
 
     @cherrypy.expose
     def off(self, name):
-        print name
         bulb = bulbs.bulbWithName(self.allBulbs, name)
         bulb.turnOff()
 
@@ -21,11 +20,20 @@ class ControlApp(object):
 
     @cherrypy.expose
     def allBulbNames(self):
+        bulb_name_list = [ ]
         bulb_names = ""
+
         for bulb in self.allBulbs:
             name = bulb.name
+            bulb_name_list.append(name)
+
+        bulb_name_list.sort()
+
+        for name in bulb_name_list:
             bulb_names = bulb_names + '\n' + name
+
         bulb_names = bulb_names[1:]
+
         return bulb_names
 
 cherrypy.quickstart(ControlApp())
