@@ -10,6 +10,7 @@ class ControlApp(object):
 
     @cherrypy.expose
     def off(self, name):
+        print name
         bulb = bulbs.bulbWithName(self.allBulbs, name)
         bulb.turnOff()
 
