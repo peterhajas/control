@@ -24,12 +24,12 @@ body {
 }
 
 .on {
-    background-color: green;
+    background-color: rgb(64, 149, 90);
     text-align: right;
 }
 
 .off {
-    background-color: red;
+    background-color: rgb(203, 32, 26);
     text-align: left;
 }
 
