@@ -2,24 +2,40 @@ from bulbs import bulbs
 import cherrypy
 
 class ControlApp(object):
-    allBulbs = bulbs.allBulbs()
+    def __init__(self):
+        self.refreshBulbs()
+
+    def refreshBulbs(self):
+        self.allBulbs = bulbs.allBulbs()
 
     def index(self):
         return "Hello, world!"
     index.exposed = True
 
+    def bulbWithName(self, name):
+        # First, try to get one from self.allBulbs
+        bulb = bulbs.bulbWithName(self.allBulbs, name)
+
+        if bulb is None:
+            # Refresh first
+            self.refreshBulbs()
+            bulb = bulbs.bulbWithName(self.allBulbs, name)
+
+        return bulb
+
     @cherrypy.expose
     def off(self, name):
-        bulb = bulbs.bulbWithName(self.allBulbs, name)
+        bulb = self.bulbWithName(name)
         bulb.turnOff()
 
     @cherrypy.expose
     def on(self, name):
-        bulb = bulbs.bulbWithName(self.allBulbs, name)
+        bulb = self.bulbWithName(name)
         bulb.turnOn()
 
     @cherrypy.expose
     def allBulbNames(self):
+        self.refreshBulbs()
         bulb_name_list = [ ]
         bulb_names = ""
 
