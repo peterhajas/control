@@ -1,0 +1,3 @@
+[submodule "flux_led"]
+	path = flux_led
+	url = https://github.com/beville/flux_led.git
