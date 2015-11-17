@@ -10,6 +10,7 @@
     <body>
     <script>
         var address = host + "/allBulbNames";
+        $("#loading").removeClass("hidden");
         $.get(address,
               function(data) {
                   var bulbs = data.split("\n");
@@ -44,12 +45,15 @@
                       console.log(bulbElement);
                       $("#bulbContainer").append(bulbElement);
                   }
+                $("#loading").addClass("hidden");
               }
           );
     </script>
 
     <div id="bulbContainer">
-        
+    </div>
+    <div id="loading">
+        Loading...
     </div>
 
     </body>
