@@ -1,0 +1,56 @@
+<html>
+    <head>
+    <script>
+        var host = "http://127.0.0.1:8080"
+    </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    </head>
+
+    <body>
+    <script>
+        var address = host + "/allBulbNames";
+        $.get(address,
+              function(data) {
+                  var bulbs = data.split("\n");
+                  for (var i in bulbs) {
+                      var bulbName = bulbs[i];
+                      console.log(bulbName);
+                      var bulbElement = $('<li class=bulbListItem></li>');
+                      bulbElement.text(bulbName);
+                      bulbElement.prop('id', bulbName);
+
+                      var onButtonElement = $('<div class="button on">on</div>');
+                      var offButtonElement = $('<div class="button off">off</div>');
+
+                      var buttonContainer = $('<div class=buttonContainer></div>');
+
+                      $(onButtonElement).click(function() {
+                          var name = $(this).parent().parent().attr('id');
+                          var getAddress = host + "/on/" + name;
+                          $.get(getAddress);
+                      });
+
+                      $(offButtonElement).click(function() {
+                          var name = $(this).parent().parent().attr('id');
+                          var getAddress = host + "/off/" + name;
+                          $.get(getAddress);
+                      });
+
+                      buttonContainer.append(offButtonElement);
+                      buttonContainer.append(onButtonElement);
+
+                      bulbElement.append(buttonContainer);
+                      console.log(bulbElement);
+                      $("#bulbContainer").append(bulbElement);
+                  }
+              }
+          );
+    </script>
+
+    <div id="bulbContainer">
+        
+    </div>
+
+    </body>
+</html>

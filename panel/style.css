@@ -1,0 +1,53 @@
+body {
+    background-color: black;
+}
+
+.bulbListItem {
+    text-align: center;
+    color: white;
+    display: inline-block;
+    font-family: sans-serif;
+    font-size: 80pt;
+
+    margin: 10pt;
+
+    width: 500pt;
+    background-color: #222;
+    border-radius: 20pt;
+}
+
+.button {
+    font-size: 75pt;
+    height: 100pt;
+    display: inline-block;
+    width: 50%;
+}
+
+.on {
+    background-color: green;
+    text-align: right;
+}
+
+.off {
+    background-color: red;
+    text-align: left;
+}
+
+@media (max-width: 1600pt) {
+    .bulbListItem {
+        width: 90%;
+        margin-left: 5%;
+        margin-top: 5%;
+        margin-bottom: 2%;
+    }
+}
+
+@media (max-width: 600pt) {
+    .bulbListItem {
+        font-size: 50pt;
+        display: block;
+    }
+
+    .button {
+    }
+}
