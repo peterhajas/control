@@ -46,7 +46,10 @@ def allBulbs():
     bulbs = [ ]
 
     for ip in ips:
-        name = ips_to_names[ip]
+        if ip in ips_to_names.keys():
+            name = ips_to_names[ip]
+        else:
+            name = ip
         bulb = Bulb(name, ip)
         bulbs.append(bulb)
 
