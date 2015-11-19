@@ -1,5 +1,6 @@
 from bulbs import bulbs
 import cherrypy
+import os
 
 class ControlApp(object):
     def __init__(self):
@@ -9,7 +10,10 @@ class ControlApp(object):
         self.allBulbs = bulbs.allBulbs()
 
     def index(self):
-        return "Hello, world!"
+        panelFile = open('panel/index.html', 'r')
+        panelContents = panelFile.read()
+        panelFile.close()
+        return panelContents
     index.exposed = True
 
     def bulbWithName(self, name):
@@ -55,4 +59,4 @@ class ControlApp(object):
 cherrypy.config.update({'server.socket_host': '0.0.0.0',
                         'server.socket_port': 8080,
                        })
-cherrypy.quickstart(ControlApp())
+cherrypy.quickstart(ControlApp(), '/', 'control.conf')
