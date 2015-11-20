@@ -1,6 +1,16 @@
 from bulbs import bulbs
 import cherrypy
 import os
+import sys
+
+configFilePath = sys.argv[1] + '.conf'
+isDev = sys.argv[1] == 'dev'
+ip = '10.0.1.3'
+
+if isDev:
+    ip = '127.0.0.1'
+
+print ip
 
 class ControlApp(object):
     def __init__(self):
@@ -13,6 +23,7 @@ class ControlApp(object):
         panelFile = open('panel/index.html', 'r')
         panelContents = panelFile.read()
         panelFile.close()
+        panelContents = panelContents.replace('ADDRESS', ip)
         return panelContents
     index.exposed = True
 
@@ -56,7 +67,4 @@ class ControlApp(object):
 
         return bulb_names
 
-cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                        'server.socket_port': 8080,
-                       })
-cherrypy.quickstart(ControlApp(), '/', 'control.conf')
+cherrypy.quickstart(ControlApp(), '/', configFilePath)
