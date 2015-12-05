@@ -126,6 +126,7 @@
 			var address = host + "/allBulbNames";
 			$.get(address,
 				function(data) {
+					$("#bulbContainer").empty();
 					var bulbs = data.split("\n");
 					for (var i in bulbs) {
 						var bulbName = bulbs[i];
