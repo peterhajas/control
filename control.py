@@ -51,6 +51,11 @@ class ControlApp(object):
             return 'off'
 
     @cherrypy.expose
+    def perceivedColor(self, name):
+        bulb = self.bulbWithName(name)
+        return bulb.perceivedColor()
+
+    @cherrypy.expose
     def allBulbNames(self):
         bulb_name_list = [ ]
         bulb_names = ''
