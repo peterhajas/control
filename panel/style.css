@@ -16,23 +16,6 @@ body {
     border-radius: 20pt;
 }
 
-.button {
-    font-size: 75pt;
-    height: 100pt;
-    display: inline-block;
-    width: 50%;
-}
-
-.on {
-    background-color: rgb(64, 149, 90);
-    text-align: right;
-}
-
-.off {
-    background-color: rgb(203, 32, 26);
-    text-align: left;
-}
-
 @media (max-width: 1600pt) {
     .bulbListItem {
         width: 90%;
