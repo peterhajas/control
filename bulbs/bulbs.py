@@ -9,7 +9,8 @@ class Bulb:
         self.wifiLEDBulb.refreshState()
 
     def isOn(self):
-        return self.wifiLEDBulb.isOn()
+        self.wifiLEDBulb.refreshState()
+        return self.wifiLEDBulb.is_on
 
     def setOn(self, on):
         self.wifiLEDBulb.turnOn(on)
@@ -21,7 +22,7 @@ class Bulb:
         self.setOn(False)
 
     def toggle(self):
-        newOn = not self.isOn
+        newOn = not self.isOn()
         self.setOn(newOn)
 
 def bulbWithName(bulbs, name):

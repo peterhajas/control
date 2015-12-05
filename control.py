@@ -49,6 +49,11 @@ class ControlApp(object):
         bulb.turnOn()
 
     @cherrypy.expose
+    def toggle(self, name):
+        bulb = self.bulbWithName(name)
+        bulb.toggle()
+
+    @cherrypy.expose
     def allBulbNames(self):
         self.refreshBulbs()
         bulb_name_list = [ ]
