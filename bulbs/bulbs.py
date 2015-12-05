@@ -1,7 +1,14 @@
 # -*- coding: UTF-8 -*-
 
-import flux_led
 import yaml
+import subprocess
+
+def _stdOutFromFluxCommand(argsList):
+    command = 'python bulbs/flux_led.py ' + argsList
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    stdOut = process.communicate()[0]
+    return stdOut
+
 
 class BulbManager:
     def __init__(self):
@@ -15,8 +22,10 @@ class BulbManager:
         return None
 
     def _updateBulbs(self):
-        seeker = flux_led.BulbSeeker()
-        ips = seeker.discover(5)
+        ips = _stdOutFromFluxCommand('-s')
+        ips = ips.split('\n')[1:-1]
+
+        ips = [ip.strip() for ip in ips]
 
         # Reverse the name-to-ip map
         names_to_ips_file = open('bulbs/bulbs.yaml', 'r')
@@ -45,21 +54,35 @@ class Bulb:
     def __init__(self, name, ip):
         self.name = name
         self.ip = ip
-        self.wifiLEDBulb = flux_led.WifiLedBulb(ip)
-        self._refresh()
 
-    def _refresh(self):
-        # ¯\_(ツ)_/¯
-        self.wifiLEDBulb.refreshState()
-        self.wifiLEDBulb.refreshState()
-        self.wifiLEDBulb.refreshState()
+    def _currentStatusString(self):
+        status = _stdOutFromFluxCommand('-i {}'.format(self.ip))
+        status = status.replace('[{}]'.format(self.ip), '')
+        status = status.strip()
+
+        return status
 
     def isOn(self):
-        self._refresh()
-        return self.wifiLEDBulb.is_on
+        status = self._currentStatusString()
+        statusStateElement = status.split()[0]
+        statusStateElement = statusStateElement.strip()
+
+        if statusStateElement == "ON":
+            return True
+        elif statusStateElement == "OFF":
+            return False
+        else:
+            print "Unknown state - assuming \"OFF\""
+            return False
 
     def setOn(self, on):
-        self.wifiLEDBulb.turnOn(on)
+        onDirective = ''
+        if on:
+            onDirective = "1"
+        else:
+            onDirective = "0"
+        command = '-{} {}'.format(onDirective, self.ip)
+        _stdOutFromFluxCommand(command)
 
     def turnOn(self):
         self.setOn(True)
@@ -72,8 +95,7 @@ class Bulb:
         self.setOn(newOn)
 
     def perceivedColor(self):
-        self._refresh()
-        stateStr = self.wifiLEDBulb.__str__()
+        stateStr = self._currentStatusString()
 
         # Shave off the first part ("ON or "OFF")
 
@@ -114,8 +136,6 @@ class Bulb:
             colorStr = colorStr.strip()
 
             components = colorStr.split(' ')
-
-            print components
 
             if len(components) > 2:
                 # Grab the three components
