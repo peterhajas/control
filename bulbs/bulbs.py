@@ -39,9 +39,6 @@ class BulbManager:
 
         self.bulbs = bulbs
 
-        # self.scheduler.enter(60, 1, BulbManager._updateBulbs, self)
-        # self.scheduler.run()
-
 class Bulb:
     def __init__(self, name, ip):
         self.name = name
