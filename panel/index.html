@@ -3,7 +3,7 @@
     <script>
         var address = "ADDRESS"; // this will be replaced when served for /index by control.py
         var host = "http://" + address + ":8080";
-        var refresh_interval = 1800; // 30 minutes seems reasonable
+        var refresh_interval = 5 * 60 * 1000; // 5 minutes seems reasonable
     </script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>Control</title>
@@ -12,43 +12,135 @@
 
     <body>
     <script>
-        var address = host + "/allBulbNames";
-        $("#loading").removeClass("hidden");
-        $.get(address,
-              function(data) {
-                  var bulbs = data.split("\n");
-                  for (var i in bulbs) {
-                      var bulbName = bulbs[i];
-                      console.log(bulbName);
-                      var bulbElement = $('<li class=bulbListItem></li>');
-                      bulbElement.text(bulbName);
-                      bulbElement.prop('id', bulbName);
+		/// Defines a Bulb.
+		function Bulb(name, color, on) {
+			return {"name": name, "color": color, "on": on};
+		}
 
-                      $(bulbElement).click(function() {
-                          var name = $(this).attr('id');
-                          var getAddress = host + "/toggle/" + name;
-                          $.get(getAddress);
-                      });
+		/// An array of all the available bulbs on the network.
+		var allBulbs = [];
 
-                      console.log(bulbElement);
-                      $("#bulbContainer").append(bulbElement);
-                  }
-                $("#loadingContainer").addClass("hidden");
-              }
-          );
+		/// Adds a bulb to the listing of available bulbs.
+		function addBulb(bulb) {
+			// Add this bulb to the list.
+			allBulbs.push(bulb);
 
-          setInterval(function() {
-            location.reload();
-          }, refresh_interval * 1000);
+			// If there’s no on/off state, get it.
+			if (bulb.on == undefined) {
+				refreshStateOfBulb(bulb);
+			}
+
+			// If there’s no color state, get it.
+			if (bulb.color == undefined) {
+				refreshColorOfBulb(bulb);
+			}
+
+			// Add this bulb to the page.
+			var bulbElement = bulbRepresentation(bulb);
+			$("#bulbContainer").append(bulbElement);
+		}
+
+		function bulbNameToID(name) {
+			// Strip all characters but digits, letters, '-', and '_'.
+			return name.replace(/[^\d\w\:\-\_]/g, '_');
+		}
+
+		/// Returns a DOM representation of the bulb.
+		function bulbRepresentation(bulb) {
+			// Create an HTML representation of this bulb.
+			var bulbElement = $('<li class=bulbListItem></li>');
+			refreshBulbRepresentation(bulbElement, bulb);
+			return bulbElement;
+		}
+
+		function toggleBulb(bulb) {
+			console.log("Toggling " + bulb.name);
+
+			var getAddress = host + "/toggle/" + bulb.name;
+			$.get(getAddress);
+
+			setBulbState(bulb, (bulb.on == true) ? false : true);
+		}
+
+		function refreshBulbRepresentation(bulbElement, bulb) {
+			bulbElement.text(bulb.name);
+			bulbElement.prop('id', bulbNameToID(bulb.name));
+
+			// When this bulb is clicked, toggle it.
+			$(bulbElement).unbind('click').click(function() {
+				toggleBulb(bulb);
+			});
+			
+			// Remove its previous state.
+			bulbElement.removeClass("off");
+			bulbElement.removeClass("on");
+
+			// Add its new state.
+			if (bulb.on == true) {
+				bulbElement.addClass("on");
+			} else if (bulb.on == false) {
+				bulbElement.addClass("off");
+			}
+		}
+
+		/// Refresh the state of a bulb with a particular name
+		function refreshStateOfBulb(bulb) {
+			console.log("Refreshing State of " + bulb.name);
+
+			var address = host + "/state/" + bulb.name;
+			$.get(address,
+				function(data) {
+					state = undefined;
+					if (data == "on") {
+						// The bulb is on.
+						state = true;
+					} else if (data == "off") {
+						// The bulb is off.
+						state = false;
+					} else {
+						// The bulb is in an unknown state.
+						state = undefined;
+					}
+					
+					setBulbState(bulb, state);
+				}
+			);
+		}
+
+		function setBulbState(bulb, state) {
+			bulb.on = state;
+			// Get the element for the bulb.
+			var bulbElement = "#" + bulbNameToID(bulb.name);
+			// Refresh the element based on its new state.
+			refreshBulbRepresentation($(bulbElement), bulb);
+		}
+
+		function refreshColorOfBulb(bulb) {
+			console.log("Refreshing Color of " + bulb.name);
+		}
+
+		/// Refresh the listing of available bulbs.
+		function refreshAvailableBulbs() {
+			console.log("Refreshing List of Bulbs");
+
+			var address = host + "/allBulbNames";
+			$.get(address,
+				function(data) {
+					var bulbs = data.split("\n");
+					for (var i in bulbs) {
+						var bulbName = bulbs[i];
+						addBulb(Bulb(bulbName, undefined, undefined));
+					}
+				}
+			);
+		}
+
+		setInterval(refreshAvailableBulbs, refresh_interval);
+		refreshAvailableBulbs();
+
     </script>
 
     <div id="bulbContainer">
-    </div>
-
-    <div id="loadingContainer">
-		<div id="loadingText">
-			Loading...
-		</div>
     </div>
 
     </body>
