@@ -2,20 +2,19 @@ from bulbs import bulbs
 import cherrypy
 import os
 import sys
+import time
 
 configFilePath = sys.argv[1] + '.conf'
 isDev = sys.argv[1] == 'dev'
 ip = '10.0.1.3'
+updateThresholdTime = 30
 
 if isDev:
     ip = '127.0.0.1'
 
 class ControlApp(object):
     def __init__(self):
-        self.refreshBulbs()
-
-    def refreshBulbs(self):
-        self.allBulbs = bulbs.allBulbs()
+        self.bulbManager = bulbs.BulbManager()
 
     def index(self):
         panelFile = open('panel/index.html', 'r')
@@ -26,15 +25,7 @@ class ControlApp(object):
     index.exposed = True
 
     def bulbWithName(self, name):
-        # First, try to get one from self.allBulbs
-        bulb = bulbs.bulbWithName(self.allBulbs, name)
-
-        if bulb is None:
-            # Refresh first
-            self.refreshBulbs()
-            bulb = bulbs.bulbWithName(self.allBulbs, name)
-
-        return bulb
+        return self.bulbManager.bulbWithName(name)
 
     @cherrypy.expose
     def off(self, name):
@@ -53,11 +44,9 @@ class ControlApp(object):
 
     @cherrypy.expose
     def allBulbNames(self):
-        self.refreshBulbs()
         bulb_name_list = [ ]
-        bulb_names = ""
-
-        for bulb in self.allBulbs:
+        bulb_names = ''
+        for bulb in self.bulbManager.bulbs:
             name = bulb.name
             bulb_name_list.append(name)
 
@@ -73,4 +62,12 @@ class ControlApp(object):
 cherrypy.config.update({'server.socket_host': '0.0.0.0',
                         'server.socket_port': 8080,
                        })
-cherrypy.quickstart(ControlApp(), '/', configFilePath)
+app = ControlApp()
+
+cherrypy.tree.mount(app, '/', configFilePath)
+cherrypy.engine.start()
+
+while True:
+    print 'Updating bulbs...'
+    time.sleep(updateThresholdTime)
+    app.bulbManager._updateBulbs()
