@@ -5,6 +5,7 @@ body {
 .bulbListItem {
     text-align: center;
     color: white;
+    cursor: pointer;
     display: inline-block;
     font-family: sans-serif;
     font-size: 80pt;
