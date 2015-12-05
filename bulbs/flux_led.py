@@ -478,6 +478,8 @@ class WifiLedBulb():
 		elif power_state == 0x24:
 			self.is_on = False
 			power_str = "OFF"
+                else:
+                        power_str = "???"
 			
 		pattern = rx[3]
 		ww_level = rx[9]
