@@ -24,27 +24,12 @@
                       bulbElement.text(bulbName);
                       bulbElement.prop('id', bulbName);
 
-                      var onButtonElement = $('<div class="button on">on</div>');
-                      var offButtonElement = $('<div class="button off">off</div>');
-
-                      var buttonContainer = $('<div class=buttonContainer></div>');
-
-                      $(onButtonElement).click(function() {
-                          var name = $(this).parent().parent().attr('id');
-                          var getAddress = host + "/on/" + name;
+                      $(bulbElement).click(function() {
+                          var name = $(this).attr('id');
+                          var getAddress = host + "/toggle/" + name;
                           $.get(getAddress);
                       });
 
-                      $(offButtonElement).click(function() {
-                          var name = $(this).parent().parent().attr('id');
-                          var getAddress = host + "/off/" + name;
-                          $.get(getAddress);
-                      });
-
-                      buttonContainer.append(offButtonElement);
-                      buttonContainer.append(onButtonElement);
-
-                      bulbElement.append(buttonContainer);
                       console.log(bulbElement);
                       $("#bulbContainer").append(bulbElement);
                   }
