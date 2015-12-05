@@ -43,6 +43,14 @@ class ControlApp(object):
         bulb.toggle()
 
     @cherrypy.expose
+    def state(self, name):
+        bulb = self.bulbWithName(name)
+        if bulb.isOn():
+            return 'on'
+        else:
+            return 'off'
+
+    @cherrypy.expose
     def allBulbNames(self):
         bulb_name_list = [ ]
         bulb_names = ''
