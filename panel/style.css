@@ -33,12 +33,19 @@ body {
     }
 }
 
-#loading {
+#loadingContainer {
     text-align: center;
     color: gray;
     font-size: 150pt;
     width: 100%;
     height: 100%;
+	display: inline-block;
+	display: table;
+}
+
+#loadingText {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .hidden {
