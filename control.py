@@ -10,8 +10,6 @@ ip = '10.0.1.3'
 if isDev:
     ip = '127.0.0.1'
 
-print ip
-
 class ControlApp(object):
     def __init__(self):
         self.refreshBulbs()
@@ -72,4 +70,7 @@ class ControlApp(object):
 
         return bulb_names
 
+cherrypy.config.update({'server.socket_host': '0.0.0.0',
+                        'server.socket_port': 8080,
+                       })
 cherrypy.quickstart(ControlApp(), '/', configFilePath)
