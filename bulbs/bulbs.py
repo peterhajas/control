@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import flux_led
 import yaml
 
@@ -44,10 +46,16 @@ class Bulb:
         self.name = name
         self.ip = ip
         self.wifiLEDBulb = flux_led.WifiLedBulb(ip)
+        self._refresh()
+
+    def _refresh(self):
+        # ¯\_(ツ)_/¯
+        self.wifiLEDBulb.refreshState()
+        self.wifiLEDBulb.refreshState()
         self.wifiLEDBulb.refreshState()
 
     def isOn(self):
-        self.wifiLEDBulb.refreshState()
+        self._refresh()
         return self.wifiLEDBulb.is_on
 
     def setOn(self, on):
@@ -64,8 +72,7 @@ class Bulb:
         self.setOn(newOn)
 
     def perceivedColor(self):
-        self.wifiLEDBulb.refreshState()
-        self.wifiLEDBulb.refreshState()
+        self._refresh()
         stateStr = self.wifiLEDBulb.__str__()
 
         # Shave off the first part ("ON or "OFF")
