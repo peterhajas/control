@@ -2,6 +2,7 @@
 
 import yaml
 import subprocess
+import time
 
 def _stdOutFromFluxCommand(argsList):
     command = 'python bulbs/flux_led.py ' + argsList
@@ -9,17 +10,29 @@ def _stdOutFromFluxCommand(argsList):
     stdOut = process.communicate()[0]
     return stdOut
 
+bulbUpdateThreshold = 30
 
 class BulbManager:
     def __init__(self):
-        self.bulbs = [ ]
+        self._bulbs = [ ]
+        self.lastBulbUpdateTime = time.time()
         self._updateBulbs()
 
     def bulbWithName(self, name):
-        for bulb in self.bulbs:
+        for bulb in self.bulbs():
             if bulb.name == name:
                 return bulb
         return None
+
+    def bulbs(self):
+        now = time.time()
+        difference = now - self.lastBulbUpdateTime
+
+        if difference > bulbUpdateThreshold:
+            self._updateBulbs
+            self.lastBulbUpdateTime = now
+
+        return self._bulbs
 
     def _updateBulbs(self):
         ips = _stdOutFromFluxCommand('-s')
@@ -48,7 +61,7 @@ class BulbManager:
 
         names_to_ips_file.close()
 
-        self.bulbs = bulbs
+        self._bulbs = bulbs
 
 class Bulb:
     def __init__(self, name, ip):

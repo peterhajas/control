@@ -7,7 +7,6 @@ import time
 configFilePath = sys.argv[1] + '.conf'
 isDev = sys.argv[1] == 'dev'
 ip = '10.0.1.3'
-updateThresholdTime = 30
 
 if isDev:
     ip = '127.0.0.1'
@@ -59,7 +58,7 @@ class ControlApp(object):
     def allBulbNames(self):
         bulb_name_list = [ ]
         bulb_names = ''
-        for bulb in self.bulbManager.bulbs:
+        for bulb in self.bulbManager.bulbs():
             name = bulb.name
             bulb_name_list.append(name)
 
@@ -80,7 +79,3 @@ app = ControlApp()
 cherrypy.tree.mount(app, '/', configFilePath)
 cherrypy.engine.start()
 
-while True:
-    print 'Updating bulbs...'
-    time.sleep(updateThresholdTime)
-    app.bulbManager._updateBulbs()
