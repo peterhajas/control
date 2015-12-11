@@ -35,36 +35,42 @@ class BulbManager:
         return self._bulbs
 
     def _updateBulbs(self):
-        ips = _stdOutFromFluxCommand('-s')
-        ips = ips.split('\n')[1:-1]
+        data = _stdOutFromFluxCommand('-s')
+        data = data.split('\n')[1:-1]
 
-        ips = [ip.strip() for ip in ips]
+        data = [entry.strip() for entry in data]
 
         # Reverse the name-to-ip map
-        names_to_ips_file = open('bulbs/bulbs.yaml', 'r')
-        names_to_ips = yaml.load(names_to_ips_file)
-        ips_to_names = { }
+        names_to_udids_file = open('bulbs/bulbs.yaml', 'r')
+        names_to_udids = yaml.load(names_to_udids_file)
+        udids_to_names = { }
 
-        for key in names_to_ips.keys():
-            ip = names_to_ips[key]
-            ips_to_names[ip] = key
+        for key in names_to_udids.keys():
+            udid = names_to_udids[key]
+            udids_to_names[udid] = key
 
         bulbs = [ ]
 
-        for ip in ips:
-            if ip in ips_to_names.keys():
-                name = ips_to_names[ip]
+        for bulbData in data:
+            udid = bulbData.split(' ')[0]
+            ip = bulbData.split(' ')[1]
+
+            if udid in udids_to_names.keys():
+                name = udids_to_names[udid]
             else:
-                name = ip
-            bulb = Bulb(name, ip)
+                name = udid
+            bulb = Bulb(name, udid, ip)
             bulbs.append(bulb)
 
-        names_to_ips_file.close()
+        names_to_udids_file.close()
+
+        # Sort the bulbs by name
+        bulbs = sorted(bulbs, key=lambda Bulb: Bulb.name)
 
         self._bulbs = bulbs
 
 class Bulb:
-    def __init__(self, name, ip):
+    def __init__(self, name, udid, ip):
         self.name = name
         self.ip = ip
 

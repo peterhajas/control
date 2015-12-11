@@ -733,7 +733,11 @@ class  BulbSeeker():
 						break
 	
 				if data is not None and data != msg:
-					response_list.append(data.split(',')[0])
+                                        ip = data.split(',')[0]
+                                        udid = data.split(',')[1]
+
+                                        line = udid + ' ' + ip
+					response_list.append(line)
 
 		return response_list
 #=========================================================================
